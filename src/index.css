@@ -1,0 +1,10 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+}
+html {
+  background-color: #333333;
+  color: #ffffff;
+}
