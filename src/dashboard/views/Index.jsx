@@ -1,12 +1,21 @@
 import ring from "../../assets/images/ring-7.jpg";
+import { ProductModal } from "../components/ProductModal";
+import { useState } from "react";
 export function Dashboard() {
+  const [showOpen, setShowOpen] = useState(false);
+
   return (
     <>
       <h2>後台商品</h2>
       <section className="mx-auto">
         <div className="px-5 md:px-0 w-full mx-auto">
           <div className="flex justify-end mb-5">
-            <button className="btn btn-outline btn-warning">新增商品</button>
+            <button
+              className="btn btn-outline btn-warning"
+              onClick={() => setShowOpen(true)}
+            >
+              新增商品
+            </button>
           </div>
           <table className="w-full table-auto">
             <thead>
@@ -95,6 +104,9 @@ export function Dashboard() {
           </table>
         </div>
       </section>
+      {showOpen === true && (
+        <ProductModal closeModal={() => setShowOpen(false)} />
+      )}
     </>
   );
 }
