@@ -1,15 +1,10 @@
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { Dashboard } from "./dashboard/views/Index.jsx";
-import { BrowserRouter } from "react-router";
+
+import { createBrowserRouter, RouterProvider } from "react-router";
+import routes from "./routes/index.jsx";
 import "./index.css";
+const router = createBrowserRouter(routes);
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <BrowserRouter>
-      <main className="w-full mx-auto md:w-[90%]">
-        <Dashboard />
-      </main>
-    </BrowserRouter>
-  </StrictMode>
+  <RouterProvider router={router}></RouterProvider>
 );
