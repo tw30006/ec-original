@@ -1,14 +1,11 @@
 import { useLocation } from "react-router";
 export function ProductDetail() {
   const { product } = useLocation().state;
-  console.log(product);
-  console.log(useLocation().state);
+
   return (
     <>
       <div className="xl:w-[960px] mx-auto">
-        <div className="mb-5">
-          <Navbar />
-        </div>
+        <div className="mb-5"></div>
         <section className="grid grid-cols-2 mb-10 gap-5">
           <div>
             <img src={product.imageUrl} alt={product.title} />
@@ -60,7 +57,6 @@ export function ProductDetail() {
           </div>
         </section>
       </div>
-      <Toast />
     </>
   );
 }
