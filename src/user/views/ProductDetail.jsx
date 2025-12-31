@@ -1,9 +1,6 @@
-import { Navbar } from "../components/Navbar";
-import { Toast } from "../components/Toast";
-import data from "../../assets/productData.json";
-import { useLocation, useParams } from "react-router";
+import { useLocation } from "react-router";
 export function ProductDetail() {
-  const {product} = useLocation().state;
+  const { product } = useLocation().state;
   console.log(product);
   console.log(useLocation().state);
   return (
@@ -30,7 +27,9 @@ export function ProductDetail() {
                 remove
               </span>
               <span className="w-[70px] border-y p-1 text-center">1</span>
-              <span className="material-symbols-outlined p-1 border cursor-pointer">add</span>
+              <span className="material-symbols-outlined p-1 border cursor-pointer">
+                add
+              </span>
             </div>
             <div className="flex gap-4">
               <button className="py-2 px-3 text-lg bg-sky-900 hover:bg-sky-700 rounded-sm text-white cursor-pointer">
