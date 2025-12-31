@@ -3,7 +3,7 @@ import ring from "../../assets/images/ring-7.jpg";
 export function ProductModal({ closeModal }) {
   return (
     <>
-      <div className="fixed bg-white/30 inset-0"></div>
+      <div className="fixed bg-black/70 inset-0"></div>
       <section className="md:w-[680px] xl:w-[900px] mx-auto bg-slate-800 border border-white rounded-md md:absolute md:inset-50">
         <div className="px-5 py-5 md:py-2 grid md:grid-cols-2 gap-5">
           <div className="flex flex-col gap-3">

@@ -3,6 +3,7 @@ import { Dashboard } from "../dashboard/views/Index";
 import { Home } from "../user/views/Home";
 import { About } from "../user/views/About";
 import { Products } from "../user/views/Products";
+import { ProductDetail } from "../user/views/ProductDetail";
 const routes = [
   {
     path: "/",
@@ -19,6 +20,10 @@ const routes = [
       {
         path: "products",
         element: <Products />,
+      },
+      {
+        path: "productDetail/:id",
+        element: <ProductDetail />,
       },
       {
         path: "dashboard",

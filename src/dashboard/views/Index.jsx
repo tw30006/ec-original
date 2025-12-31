@@ -6,12 +6,11 @@ export function Dashboard() {
 
   return (
     <>
-      <h2>後台商品</h2>
       <section className="mx-auto">
         <div className="px-5 md:px-0 w-full mx-auto">
           <div className="flex justify-end mb-5">
             <button
-              className="btn btn-outline btn-warning"
+              className="btn btn-outline btn-warning text-xl"
               onClick={() => setShowOpen(true)}
             >
               新增商品
