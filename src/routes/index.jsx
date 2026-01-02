@@ -4,6 +4,23 @@ import { Home } from "../user/views/Home";
 import { About } from "../user/views/About";
 import { Products } from "../user/views/Products";
 import { ProductDetail } from "../user/views/ProductDetail";
+import { Login } from "../user/views/Login";
+import { Navigate } from "react-router";
+
+const getCookieToken = () => {
+  const raw = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith("ec-token="))
+    ?.substring("ec-token=".length);
+
+  return raw ? decodeURIComponent(raw) : null;
+};
+
+const RequireAuth = ({ children }) => {
+  const token = getCookieToken();
+  if (!token) return <Navigate to="/login" replace />;
+  return children;
+};
 const routes = [
   {
     path: "/",
@@ -27,7 +44,15 @@ const routes = [
       },
       {
         path: "dashboard",
-        element: <Dashboard />,
+        element: (
+          <RequireAuth>
+            <Dashboard />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: "login",
+        element: <Login />,
       },
     ],
   },

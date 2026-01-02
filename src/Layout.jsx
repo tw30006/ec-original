@@ -1,8 +1,12 @@
 import { Outlet, Link } from "react-router";
 
 export function Layout() {
+  const hasToken = document.cookie
+    .split("; ")
+    .some((row) => row.startsWith("ec-token="));
+
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <header className="bg-blue-200/50 text-white">
         <div className="w-full mx-auto md:w-[90%]">
           <nav className="flex justify-end text-xl">
@@ -22,7 +26,7 @@ export function Layout() {
               關於
             </Link>
             <Link
-              to="/dashboard"
+              to={hasToken ? "/dashboard" : "/login"}
               className="p-2 hover:bg-yellow-500 hover:text-black"
             >
               後台管理
@@ -30,7 +34,7 @@ export function Layout() {
           </nav>
         </div>
       </header>
-      <main className="w-full mx-auto md:w-[90%] py-15">
+      <main className="w-full mx-auto md:w-[90%] flex-1 py-15">
         <Outlet />
       </main>
       <footer className="footer sm:footer-horizontal footer-center bg-blue-200/50 text-black p-4">
@@ -41,6 +45,6 @@ export function Layout() {
           </p>
         </aside>
       </footer>
-    </>
+    </div>
   );
 }
