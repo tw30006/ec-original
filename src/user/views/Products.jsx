@@ -1,4 +1,4 @@
-import data from "../../assets/productData.json";
+// import data from "../../assets/productData.json";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 export function Products() {
@@ -8,19 +8,33 @@ export function Products() {
     navigate(`/productDetail/${product.id}`, { state: { product } });
   };
 
+  const apiUrl = import.meta.env.VITE_APP;
+  const apiPath = import.meta.env.VITE_APP_PATH;
+
+  const getProducts = async () => {
+    try {
+      const res = await fetch(`${apiUrl}/api/${apiPath}/products/all`, {
+        method: "GET",
+      });
+      const data = await res.json();
+      setProducts(data.products);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
-    setProducts(data);
+    getProducts();
   }, []);
   return (
     <>
       <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
         {products.map((product) => {
           return (
-            <>
-              <div
-                className="bg-base-100 shadow-sm rounded-md bg-white flex flex-col h-full cursor-pointer"
-                onClick={() => gotoProductDetail(product)}
-              >
+            <div
+              key={product.id}
+              className="bg-base-100 shadow-sm rounded-md bg-white flex flex-col h-full cursor-pointer"
+              onClick={() => gotoProductDetail(product)}
+            >
                 <div className="">
                   <img
                     className="w-full h-[300px] rounded-t-md mb-2 object-cover"
@@ -45,7 +59,6 @@ export function Products() {
                   </div>
                 </div>
               </div>
-            </>
           );
         })}
       </div>
