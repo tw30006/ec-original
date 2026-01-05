@@ -22,55 +22,32 @@ export const Login = () => {
       });
       const data = await res.json();
       if (data.success) {
-        document.cookie = `ec-token=${encodeURIComponent(data.token)}; expires=${new Date(data.expired).toUTCString()}; path=/; SameSite=Strict`;
-        handleCheckLogin();
+        document.cookie = `ec-token=${encodeURIComponent(
+          data.token
+        )}; expires=${new Date(
+          data.expired
+        ).toUTCString()}; path=/; SameSite=Strict`;
+        navigate("/dashboard");
       } else {
         setError(data.message);
       }
-    }catch (error) {
+    } catch (error) {
       console.log(error);
       setError("登入失敗");
     }
   };
 
-  const handleCheckLogin = async ()=>{
-    const token = document.cookie
-      .split("; ")
-      .find(row => row.startsWith("ec-token="))
-      ?.substring("ec-token=".length);
-    
-    const decodedToken = token ? decodeURIComponent(token) : null;
-    
-    if (!decodedToken) {
-      navigate("/login");
-      setError("請先登入");
-      return;
-    }
-    try{
-      const res = await fetch(`${apiUrl}/api/user/check`, {
-        method: "POST",
-        headers: {
-          Authorization: decodedToken,
-        },
-      });
-      const data = await res.json();
-      if (data.success) {
-        navigate("/dashboard");
-      } else {
-        setError("身分驗證失敗");
-      }
-    }catch (error) {
-      setError("身分驗證失敗");
-    }
-  }
-
   return (
     <div className="flex justify-center">
       <section className="w-[400px] rounded-md p-8 flex flex-col gap-8 bg-white">
-        <h1 className="text-3xl font-bold text-center text-blue-900">管理者登入</h1>
+        <h1 className="text-3xl font-bold text-center text-blue-900">
+          管理者登入
+        </h1>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <label htmlFor="email" className="text-black text-lg">帳號</label>
+            <label htmlFor="email" className="text-black text-lg">
+              帳號
+            </label>
             <input
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -81,7 +58,9 @@ export const Login = () => {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <label htmlFor="password" className="text-black text-lg">密碼</label>
+            <label htmlFor="password" className="text-black text-lg">
+              密碼
+            </label>
             <input
               value={password}
               onChange={(e) => setPassword(e.target.value)}

@@ -9,6 +9,8 @@ export function ProductsManage() {
     .find((row) => row.startsWith("ec-token="))
     ?.substring("ec-token=".length);
 
+  const decodedToken = token ? decodeURIComponent(token) : null;
+
   const apiUrl = import.meta.env.VITE_APP;
   const apiPath = import.meta.env.VITE_APP_PATH;
   const getProducts = async () => {
@@ -16,7 +18,7 @@ export function ProductsManage() {
       const res = await fetch(`${apiUrl}/api/${apiPath}/admin/products`, {
         method: "GET",
         headers: {
-          Authorization: decodeURIComponent(token),
+          Authorization: decodedToken,
         },
       });
       const data = await res.json();
@@ -29,9 +31,30 @@ export function ProductsManage() {
       console.log(error);
     }
   };
+  const handleCheckLogin = async () => {
+    if (!decodedToken) {
+      navigate("/login");
+      setError("請先登入");
+      return;
+    }
+    try {
+      const res = await fetch(`${apiUrl}/api/user/check`, {
+        method: "POST",
+        headers: {
+          Authorization: decodedToken,
+        },
+      });
+      const data = await res.json();
+      if (data.success) {
+        getProducts();
+      }
+    } catch (error) {
+      setError("身分驗證失敗");
+    }
+  };
 
   useEffect(() => {
-    getProducts();
+    handleCheckLogin();
   }, []);
 
   return (
@@ -80,7 +103,10 @@ export function ProductsManage() {
             </thead>
             <tbody className="flex flex-col gap-3">
               {products.map((product) => (
-                <tr className="grid grid-cols-12 items-center">
+                <tr
+                  key={product.id}
+                  className="grid grid-cols-12 items-center"
+                >
                   <td className="hidden md:block md:col-span-3">
                     <img
                       src={product.imageUrl}
