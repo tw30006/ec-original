@@ -1,5 +1,6 @@
 import { Layout } from "../Layout";
-import { Dashboard } from "../dashboard/views/Index";
+import { DashboardLayout } from "../dashboard/DashboardLayout";
+import { ProductsManage } from "../dashboard/views/ProductsManage";
 import { Home } from "../user/views/Home";
 import { About } from "../user/views/About";
 import { Products } from "../user/views/Products";
@@ -42,17 +43,20 @@ const routes = [
         path: "productDetail/:id",
         element: <ProductDetail />,
       },
-      {
-        path: "dashboard",
-        element: (
-          <RequireAuth>
-            <Dashboard />
-          </RequireAuth>
-        ),
-      },
+
       {
         path: "login",
         element: <Login />,
+      },
+    ],
+  },
+  {
+    path: "dashboard",
+    element: <DashboardLayout />,
+    children: [
+      {
+        path: "",
+        element: <ProductsManage />,
       },
     ],
   },
