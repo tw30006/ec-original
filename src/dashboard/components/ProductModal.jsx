@@ -1,6 +1,39 @@
 import ring from "../../assets/images/ring-7.jpg";
+import { useForm } from "react-hook-form";
+import { useRef } from "react";
+export function ProductModal({ closeModal, decodedToken }) {
+  const fileRef = useRef(null);
+  const apiUrl = import.meta.env.VITE_APP;
+  const apiPath = import.meta.env.VITE_APP_PATH;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    mode: "onBlur",
+  });
+  const onSubmit = (data) => {
+    console.log(data);
+  };
 
-export function ProductModal({ closeModal }) {
+  const handleUpload = (e) => {
+    fileRef.current = e.target.files[0];
+    console.log(fileRef.current);
+  };
+
+  const fetchImage = async () => {
+    const formData = new FormData();
+    formData.append("file-to-upload", fileRef.current);
+    const res = await fetch(`${apiUrl}/api/${apiPath}/admin/upload`, {
+      method: "POST",
+      headers: {
+        Authorization: decodedToken,
+      },
+      body: formData,
+    });
+    const data = await res.json();
+    console.log(data);
+  };
   return (
     <>
       <div className="fixed bg-black/70 inset-0"></div>
@@ -9,35 +42,114 @@ export function ProductModal({ closeModal }) {
           <div className="flex flex-col gap-3">
             <fieldset className="fieldset">
               <legend className="text-lg mb-1">商品名稱</legend>
-              <input type="text" className="input" />
+              <input
+                {...register("title", {
+                  required: "商品名稱為必填",
+                  minLength: { value: 2, message: "至少 2 個字" },
+                  maxLength: { value: 30, message: "最多 30 個字" },
+                })}
+                type="text"
+                className="input"
+                name="title"
+              />
+              {errors.title && (
+                <p className="text-sm text-red-400">{errors.title.message}</p>
+              )}
             </fieldset>
             <div className="flex flex-col md:flex-row gap-2">
               <fieldset className="fieldset">
                 <legend className="text-lg mb-1">原價</legend>
-                <input type="text" className="input" />
+                <input
+                  {...register("origin_price", {
+                    setValueAs: (v) => (v === "" ? undefined : Number(v)),
+                    min: { value: 0, message: "原價不得小於 0" },
+                    validate: (value) =>
+                      value === undefined || Number.isFinite(value)
+                        ? true
+                        : "請輸入數字",
+                  })}
+                  type="number"
+                  className="input"
+                  name="origin_price"
+                />
+                {errors.origin_price && (
+                  <p className="text-sm text-red-400">
+                    {errors.origin_price.message}
+                  </p>
+                )}
               </fieldset>
               <fieldset className="fieldset">
                 <legend className="text-lg mb-1">售價</legend>
-                <input type="text" className="input" />
+                <input
+                  {...register("price", {
+                    required: "售價為必填",
+                    setValueAs: (v) => (v === "" ? NaN : Number(v)),
+                    min: { value: 1, message: "售價需大於 0" },
+                    validate: (value) =>
+                      Number.isFinite(value) ? true : "請輸入數字",
+                  })}
+                  type="number"
+                  className="input"
+                  name="price"
+                />
+                {errors.price && (
+                  <p className="text-sm text-red-400">{errors.price.message}</p>
+                )}
               </fieldset>
             </div>
             <div className="flex flex-col md:flex-row gap-2">
               <fieldset className="fieldset">
                 <legend className="text-lg mb-1">分類</legend>
-                <input type="text" className="input" />
+                <input
+                  {...register("category", {
+                    required: "分類為必填",
+                    maxLength: { value: 20, message: "最多 20 個字" },
+                  })}
+                  type="text"
+                  className="input"
+                  name="category"
+                />
+                {errors.category && (
+                  <p className="text-sm text-red-400">
+                    {errors.category.message}
+                  </p>
+                )}
               </fieldset>
               <fieldset className="fieldset">
                 <legend className="text-lg mb-1">單位</legend>
-                <input type="text" className="input" />
+                <input
+                  {...register("unit", {
+                    required: "單位為必填",
+                    maxLength: { value: 10, message: "最多 10 個字" },
+                  })}
+                  type="text"
+                  className="input"
+                  name="unit"
+                />
+                {errors.unit && (
+                  <p className="text-sm text-red-400">{errors.unit.message}</p>
+                )}
               </fieldset>
             </div>
             <fieldset className="fieldset">
               <legend className="text-lg mb-1">商品描述</legend>
-              <textarea className="textarea h-24"></textarea>
+              <textarea
+                {...register("description", {
+                  maxLength: { value: 80, message: "最多 80 個字" },
+                })}
+                className="textarea h-24"
+                maxLength="80"
+              ></textarea>
+              {errors.description && (
+                <p className="text-sm text-red-400">
+                  {errors.description.message}
+                </p>
+              )}
             </fieldset>
             <div className="flex items-center gap-3">
               <legend className="text-lg mb-1">啟用</legend>
               <input
+                {...register("is_enabled")}
                 type="checkbox"
                 defaultChecked
                 className="toggle toggle-warning"
@@ -48,10 +160,20 @@ export function ProductModal({ closeModal }) {
             <fieldset className="fieldset">
               <legend className="text-lg mb-1">檔案上傳</legend>
               <div className="flex items-center gap-3">
-                <input type="file" className="file-input" />
-                <button className="btn btn-outline btn-info">新增檔案</button>
+                <input
+                  type="file"
+                  className="file-input"
+                  {...register("image")}
+                  onChange={(e) => handleUpload(e)}
+                />
+                <button
+                  className="btn btn-outline btn-info"
+                  onClick={fetchImage}
+                >
+                  新增檔案
+                </button>
               </div>
-              <label className="label">Max size 2MB</label>
+              <label className="label">Max size 3MB</label>
             </fieldset>
             <div>
               <h3 className="text-lg mb-2">已上傳圖片</h3>
@@ -69,7 +191,9 @@ export function ProductModal({ closeModal }) {
           <button className="btn btn-soft" onClick={closeModal}>
             取消
           </button>
-          <button className="btn btn-warning">儲存</button>
+          <button className="btn btn-warning" onClick={handleSubmit(onSubmit)}>
+            儲存
+          </button>
         </div>
       </section>
     </>

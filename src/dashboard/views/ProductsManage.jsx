@@ -94,7 +94,7 @@ export function ProductsManage() {
                   售價
                 </th>
                 <th scope="col" className="col-span-2 md:col-span-1 text-left">
-                  數量
+                  庫存
                 </th>
                 <th scope="col" className="col-span-2 md:col-span-1 text-left">
                   狀態
@@ -103,10 +103,7 @@ export function ProductsManage() {
             </thead>
             <tbody className="flex flex-col gap-3">
               {products.map((product) => (
-                <tr
-                  key={product.id}
-                  className="grid grid-cols-12 items-center"
-                >
+                <tr key={product.id} className="grid grid-cols-12 items-center">
                   <td className="hidden md:block md:col-span-3">
                     <img
                       src={product.imageUrl}
@@ -142,7 +139,7 @@ export function ProductsManage() {
         </div>
       </section>
       {showOpen === true && (
-        <ProductModal closeModal={() => setShowOpen(false)} />
+        <ProductModal closeModal={() => setShowOpen(false)} decodedToken={decodedToken} />
       )}
     </>
   );
