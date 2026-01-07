@@ -1,8 +1,14 @@
-import ring from "../../assets/images/ring-7.jpg";
 import { useForm } from "react-hook-form";
-import { useRef } from "react";
-export function ProductModal({ closeModal, decodedToken }) {
+import { useRef, useState, useEffect } from "react";
+export function ProductModal({
+  closeModal,
+  decodedToken,
+  onAddProduct,
+  onEditProduct,
+  selectedProduct,
+}) {
   const fileRef = useRef(null);
+  const [imageUrl, setImageUrl] = useState(null);
   const apiUrl = import.meta.env.VITE_APP;
   const apiPath = import.meta.env.VITE_APP_PATH;
   const {
@@ -12,27 +18,48 @@ export function ProductModal({ closeModal, decodedToken }) {
   } = useForm({
     mode: "onBlur",
   });
-  const onSubmit = (data) => {
-    console.log(data);
+
+  const handleAddProduct = (data) => {
+    onAddProduct(data);
+  };
+
+  const handleEditProduct = (data) => {
+    onEditProduct(selectedProduct.id, data);
+  };
+
+  const handleIsNewProduct = (data) => {
+    if (selectedProduct) {
+      return handleEditProduct(data);
+    } else {
+      return handleAddProduct(data);
+    }
   };
 
   const handleUpload = (e) => {
     fileRef.current = e.target.files[0];
-    console.log(fileRef.current);
   };
 
   const fetchImage = async () => {
     const formData = new FormData();
     formData.append("file-to-upload", fileRef.current);
-    const res = await fetch(`${apiUrl}/api/${apiPath}/admin/upload`, {
-      method: "POST",
-      headers: {
-        Authorization: decodedToken,
-      },
-      body: formData,
-    });
-    const data = await res.json();
-    console.log(data);
+
+    try {
+      const res = await fetch(`${apiUrl}/api/${apiPath}/admin/upload`, {
+        method: "POST",
+        headers: {
+          Authorization: decodedToken,
+        },
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.success === true) {
+        setImageUrl(data.imageUrl);
+      } else {
+        console.log(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <>
@@ -163,7 +190,6 @@ export function ProductModal({ closeModal, decodedToken }) {
                 <input
                   type="file"
                   className="file-input"
-                  {...register("image")}
                   onChange={(e) => handleUpload(e)}
                 />
                 <button
@@ -178,11 +204,11 @@ export function ProductModal({ closeModal, decodedToken }) {
             <div>
               <h3 className="text-lg mb-2">已上傳圖片</h3>
               <div className="grid grid-cols-3 gap-2">
-                <img src={ring} alt="" />
-                <img src={ring} alt="" />
-                <img src={ring} alt="" />
-                <img src={ring} alt="" />
-                <img src={ring} alt="" />
+                <img
+                  src={selectedProduct?.imageUrl || imageUrl}
+                  alt=""
+                  {...register("imageUrl")}
+                />
               </div>
             </div>
           </div>
@@ -191,7 +217,10 @@ export function ProductModal({ closeModal, decodedToken }) {
           <button className="btn btn-soft" onClick={closeModal}>
             取消
           </button>
-          <button className="btn btn-warning" onClick={handleSubmit(onSubmit)}>
+          <button
+            className="btn btn-warning"
+            onClick={handleSubmit(handleIsNewProduct)}
+          >
             儲存
           </button>
         </div>

@@ -3,6 +3,14 @@ import { useState, useEffect } from "react";
 export function ProductsManage() {
   const [showOpen, setShowOpen] = useState(false);
   const [products, setProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const handleOpenModal = (product) => {
+    console.log(product);
+    if (product.id) {
+      setShowOpen(true);
+      setSelectedProduct({ ...product });
+    }
+  };
 
   const token = document.cookie
     .split("; ")
@@ -31,6 +39,51 @@ export function ProductsManage() {
       console.log(error);
     }
   };
+
+  const addProduct = async (formData) => {
+    try {
+      const res = await fetch(`${apiUrl}/api/${apiPath}/admin/product`, {
+        method: "POST",
+        headers: {
+          Authorization: decodedToken,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ data: formData }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setShowOpen(false);
+        getProducts();
+      } else {
+        console.log("新增商品失敗");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const editProduct = async (id, formData) => {
+    try {
+      const res = await fetch(`${apiUrl}/api/${apiPath}/admin/product/${id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: decodedToken,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ data: formData }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setShowOpen(false);
+        getProducts();
+      } else {
+        console.log("編輯商品失敗");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleCheckLogin = async () => {
     if (!decodedToken) {
       navigate("/login");
@@ -129,7 +182,10 @@ export function ProductsManage() {
                       className="toggle toggle-warning"
                     />
                   </td>
-                  <td className="col-span-2 md:col-span-1 material-symbols-outlined text-center">
+                  <td
+                    className="col-span-2 md:col-span-1 material-symbols-outlined text-center"
+                    onClick={() => handleOpenModal(product)}
+                  >
                     more_vert
                   </td>
                 </tr>
@@ -139,7 +195,13 @@ export function ProductsManage() {
         </div>
       </section>
       {showOpen === true && (
-        <ProductModal closeModal={() => setShowOpen(false)} decodedToken={decodedToken} />
+        <ProductModal
+          closeModal={() => setShowOpen(false)}
+          decodedToken={decodedToken}
+          onAddProduct={(data) => addProduct(data)}
+          onEditProduct={(id, data) => editProduct(id, data)}
+          selectedProduct={selectedProduct}
+        />
       )}
     </>
   );
