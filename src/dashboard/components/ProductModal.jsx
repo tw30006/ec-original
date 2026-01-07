@@ -7,6 +7,20 @@ export function ProductModal({
   onEditProduct,
   selectedProduct,
 }) {
+  const emptyValues = {
+    "category": "",
+    "content": "",
+    "description": "",
+    "id": "",
+    "is_enabled": "",
+    "origin_price": "",
+    "price": "",
+    "title": "",
+    "unit": "",
+    "num": 1,
+    "imageUrl": "",
+    "imagesUrl": [],
+  };
   const fileRef = useRef(null);
   const [imageUrl, setImageUrl] = useState(null);
   const apiUrl = import.meta.env.VITE_APP;
@@ -14,6 +28,8 @@ export function ProductModal({
   const {
     register,
     handleSubmit,
+    reset,
+    setValue,
     formState: { errors },
   } = useForm({
     mode: "onBlur",
@@ -54,6 +70,8 @@ export function ProductModal({
       const data = await res.json();
       if (data.success === true) {
         setImageUrl(data.imageUrl);
+        // 將圖片 URL 設定到表單欄位中
+        setValue("imagesUrl", data.imagesUrl);
       } else {
         console.log(data.message);
       }
@@ -61,6 +79,23 @@ export function ProductModal({
       console.log(error);
     }
   };
+
+  // 當 selectedProduct 改變時，重置表單
+  useEffect(() => {
+    if (selectedProduct) {
+      // 編輯模式：設置選中產品的資料
+      reset({
+        ...selectedProduct,
+        is_enabled: Number(selectedProduct.is_enabled),
+      });
+      // 設定圖片 URL
+      setImageUrl(selectedProduct.imageUrl || null);
+    } else {
+      // 新增模式：重置為空值
+      reset(emptyValues);
+      setImageUrl(null);
+    }
+  }, [selectedProduct, reset]);
   return (
     <>
       <div className="fixed bg-black/70 inset-0"></div>
@@ -178,7 +213,6 @@ export function ProductModal({
               <input
                 {...register("is_enabled")}
                 type="checkbox"
-                defaultChecked
                 className="toggle toggle-warning"
               />
             </div>
@@ -204,12 +238,15 @@ export function ProductModal({
             <div>
               <h3 className="text-lg mb-2">已上傳圖片</h3>
               <div className="grid grid-cols-3 gap-2">
-                <img
-                  src={selectedProduct?.imageUrl || imageUrl}
-                  alt=""
-                  {...register("imageUrl")}
-                />
+                {imageUrl && (
+                  <img 
+                    src={imageUrl} 
+                    alt="產品圖片" 
+                    className="w-full h-auto object-cover rounded"
+                  />
+                )}
               </div>
+              <input type="hidden" {...register("imageUrl")} />
             </div>
           </div>
         </div>

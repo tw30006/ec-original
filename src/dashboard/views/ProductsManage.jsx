@@ -4,12 +4,13 @@ export function ProductsManage() {
   const [showOpen, setShowOpen] = useState(false);
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const handleOpenModal = (product) => {
-    console.log(product);
-    if (product.id) {
-      setShowOpen(true);
+  const handleOpenModal = (product = null) => {
+    if (product && product.id) {
       setSelectedProduct({ ...product });
+    } else {
+      setSelectedProduct(null);
     }
+    setShowOpen(true);
   };
 
   const token = document.cookie
@@ -32,6 +33,7 @@ export function ProductsManage() {
       const data = await res.json();
       if (data.success === true) {
         setProducts(data.products);
+        console.log(products);
       } else {
         console.log("取得商品失敗");
       }
@@ -117,7 +119,7 @@ export function ProductsManage() {
           <div className="flex justify-end mb-5">
             <button
               className="btn btn-outline btn-warning text-xl"
-              onClick={() => setShowOpen(true)}
+              onClick={() => handleOpenModal()}
             >
               新增商品
             </button>
@@ -176,11 +178,13 @@ export function ProductsManage() {
                     {product.unit}
                   </td>
                   <td className="col-span-2 md:col-span-1">
-                    <input
-                      type="checkbox"
-                      defaultChecked={product.is_enabled}
-                      className="toggle toggle-warning"
-                    />
+                    <span
+                      className={`text-xl ${
+                        product.is_enabled ? "text-warning" : "text-error"
+                      }`}
+                    >
+                      {product.is_enabled ? "啟用" : "停用"}
+                    </span>
                   </td>
                   <td
                     className="col-span-2 md:col-span-1 material-symbols-outlined text-center"
@@ -196,7 +200,10 @@ export function ProductsManage() {
       </section>
       {showOpen === true && (
         <ProductModal
-          closeModal={() => setShowOpen(false)}
+          closeModal={() => {
+            setShowOpen(false);
+            setSelectedProduct(null); // 關閉 modal 時重置選中的商品
+          }}
           decodedToken={decodedToken}
           onAddProduct={(data) => addProduct(data)}
           onEditProduct={(id, data) => editProduct(id, data)}
