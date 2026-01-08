@@ -202,7 +202,6 @@ export function ProductsManage() {
         <ProductModal
           closeModal={() => {
             setShowOpen(false);
-            setSelectedProduct(null); // 關閉 modal 時重置選中的商品
           }}
           decodedToken={decodedToken}
           onAddProduct={(data) => addProduct(data)}

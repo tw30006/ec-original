@@ -22,7 +22,7 @@ export function ProductModal({
     "imagesUrl": [],
   };
   const fileRef = useRef(null);
-  const [imageUrl, setImageUrl] = useState(null);
+  const [imgsUrl, setImgsUrl] = useState([]);
   const apiUrl = import.meta.env.VITE_APP;
   const apiPath = import.meta.env.VITE_APP_PATH;
   const {
@@ -69,9 +69,12 @@ export function ProductModal({
       });
       const data = await res.json();
       if (data.success === true) {
-        setImageUrl(data.imageUrl);
-        // 將圖片 URL 設定到表單欄位中
-        setValue("imagesUrl", data.imagesUrl);
+        setImgsUrl((prev) => {
+          const next = [...prev, data.imageUrl];
+          setValue("imagesUrl", next);
+          return next;
+        });
+        console.log(imgsUrl);
       } else {
         console.log(data.message);
       }
@@ -80,20 +83,18 @@ export function ProductModal({
     }
   };
 
-  // 當 selectedProduct 改變時，重置表單
   useEffect(() => {
     if (selectedProduct) {
-      // 編輯模式：設置選中產品的資料
       reset({
         ...selectedProduct,
         is_enabled: Number(selectedProduct.is_enabled),
       });
-      // 設定圖片 URL
-      setImageUrl(selectedProduct.imageUrl || null);
+      console.log(selectedProduct.imagesUrl);
+      setImgsUrl(selectedProduct.imagesUrl || []);
     } else {
-      // 新增模式：重置為空值
       reset(emptyValues);
-      setImageUrl(null);
+
+      setImgsUrl([]);
     }
   }, [selectedProduct, reset]);
   return (
@@ -238,14 +239,17 @@ export function ProductModal({
             <div>
               <h3 className="text-lg mb-2">已上傳圖片</h3>
               <div className="grid grid-cols-3 gap-2">
-                {imageUrl && (
-                  <img 
-                    src={imageUrl} 
-                    alt="產品圖片" 
-                    className="w-full h-auto object-cover rounded"
-                  />
-                )}
+                {imgsUrl.length > 0 &&
+                  imgsUrl.map((imgUrl) => (
+                    <img
+                      src={imgUrl}
+                      alt="產品圖片"
+                      className="w-full h-auto object-cover rounded"
+                      key={imgUrl}
+                    />
+                  ))}
               </div>
+
               <input type="hidden" {...register("imageUrl")} />
             </div>
           </div>
