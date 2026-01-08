@@ -1,10 +1,12 @@
 import { useForm } from "react-hook-form";
+import { DeleteProduct } from "./DeleteModal";
 import { useRef, useState, useEffect } from "react";
 export function ProductModal({
   closeModal,
   decodedToken,
   onAddProduct,
   onEditProduct,
+  onDeleteProduct,
   selectedProduct,
 }) {
   const emptyValues = {
@@ -23,6 +25,7 @@ export function ProductModal({
   };
   const fileRef = useRef(null);
   const [imgsUrl, setImgsUrl] = useState([]);
+  const [showDelete, setShowDelete] = useState(false);
   const apiUrl = import.meta.env.VITE_APP;
   const apiPath = import.meta.env.VITE_APP_PATH;
   const {
@@ -42,7 +45,11 @@ export function ProductModal({
   const handleEditProduct = (data) => {
     onEditProduct(selectedProduct.id, data);
   };
+  const handleDeleteProduct = () => {
+    onDeleteProduct(selectedProduct.id);
+  };
 
+  
   const handleIsNewProduct = (data) => {
     if (selectedProduct) {
       return handleEditProduct(data);
@@ -89,7 +96,6 @@ export function ProductModal({
         ...selectedProduct,
         is_enabled: Number(selectedProduct.is_enabled),
       });
-      console.log(selectedProduct.imagesUrl);
       setImgsUrl(selectedProduct.imagesUrl || []);
     } else {
       reset(emptyValues);
@@ -100,7 +106,7 @@ export function ProductModal({
   return (
     <>
       <div className="fixed bg-black/70 inset-0"></div>
-      <section className="md:w-[680px] xl:w-[900px] mx-auto bg-slate-800 border border-white rounded-md md:absolute md:inset-50">
+      <section className="w-[300px] md:w-[680px] xl:w-[900px] m-auto h-fit bg-slate-800 border border-white rounded-md fixed inset-0">
         <div className="px-5 py-5 md:py-2 grid md:grid-cols-2 gap-5">
           <div className="flex flex-col gap-3">
             <fieldset className="fieldset">
@@ -198,6 +204,7 @@ export function ProductModal({
               <legend className="text-lg mb-1">商品描述</legend>
               <textarea
                 {...register("description", {
+                  required: "分類為必填",
                   maxLength: { value: 80, message: "最多 80 個字" },
                 })}
                 className="textarea h-24"
@@ -239,15 +246,24 @@ export function ProductModal({
             <div>
               <h3 className="text-lg mb-2">已上傳圖片</h3>
               <div className="grid grid-cols-3 gap-2">
-                {imgsUrl.length > 0 &&
-                  imgsUrl.map((imgUrl) => (
+                  {imgsUrl.length > 0 ? (
+                    imgsUrl.map((imgUrl) => (
+                      <img
+                        src={imgUrl}
+                        alt="產品圖片"
+                        className="w-full h-auto object-cover rounded"
+                        key={imgUrl}
+                      />
+                    ))
+                  ) : selectedProduct?.imageUrl ? (
                     <img
-                      src={imgUrl}
+                      src={selectedProduct.imageUrl}
                       alt="產品圖片"
                       className="w-full h-auto object-cover rounded"
-                      key={imgUrl}
                     />
-                  ))}
+                  ) : (
+                    <span className="text-gray-400 col-span-3">尚無圖片</span>
+                  )}
               </div>
 
               <input type="hidden" {...register("imageUrl")} />
@@ -264,8 +280,15 @@ export function ProductModal({
           >
             儲存
           </button>
+
+          {selectedProduct?.id && (
+            <button className="btn btn-error" onClick={()=>setShowDelete(true)}>刪除</button>
+          )}
         </div>
       </section>
+      {showDelete === true && (
+        <DeleteProduct closeModal={closeModal} onHandleDeleteProduct={handleDeleteProduct}/>
+      )}
     </>
   );
 }

@@ -86,6 +86,27 @@ export function ProductsManage() {
     }
   };
 
+  const deleteProduct = async (id) => {
+    try {
+      const res = await fetch(`${apiUrl}/api/${apiPath}/admin/product/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: decodedToken,
+        },
+        body: JSON.stringify({ id: id }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setShowOpen(false);
+        getProducts();
+      } else {
+        console.log("刪除商品失敗");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleCheckLogin = async () => {
     if (!decodedToken) {
       navigate("/login");
@@ -160,11 +181,19 @@ export function ProductsManage() {
               {products.map((product) => (
                 <tr key={product.id} className="grid grid-cols-12 items-center">
                   <td className="hidden md:block md:col-span-3">
+                    {product.imagesUrl ? (
                     <img
-                      src={product.imageUrl}
+                      src={product.imagesUrl[0]}
                       alt="ring"
                       className="w-[150px] xl:w-[200px] h-full object-cover"
                     />
+                    ) : (
+                      <img
+                        src={product.imageUrl}
+                        alt="ring"
+                        className="w-[150px] xl:w-[200px] h-full object-cover"
+                      />
+                    )}
                   </td>
                   <td className="col-span-3 md:col-span-3 text-xl">
                     {product.title}
@@ -206,9 +235,13 @@ export function ProductsManage() {
           decodedToken={decodedToken}
           onAddProduct={(data) => addProduct(data)}
           onEditProduct={(id, data) => editProduct(id, data)}
+          onDeleteProduct={(id) => deleteProduct(id)}
           selectedProduct={selectedProduct}
         />
       )}
+      
+       
+      
     </>
   );
 }
