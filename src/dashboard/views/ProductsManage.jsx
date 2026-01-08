@@ -198,7 +198,7 @@ export function ProductsManage() {
                   <td className="col-span-3 md:col-span-3 text-xl">
                     {product.title}
                   </td>
-                  <td className="hidden xl:block md:col-span-2">$0</td>
+                  <td className="hidden xl:block md:col-span-2">${product.origin_price}</td>
                   <td className="col-span-3 md:col-span-2 xl:col-span-1">
                     ${product.price}
                   </td>
