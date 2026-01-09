@@ -107,7 +107,7 @@ export function ProductModal({
     <>
       <div className="fixed bg-black/70 inset-0"></div>
       <section className="w-[300px] md:w-[680px] xl:w-[900px] m-auto h-fit bg-slate-800 border border-white rounded-md fixed inset-0">
-        <div className="px-5 py-5 md:py-2 grid md:grid-cols-2 gap-5">
+        <div className="px-5 py-5 grid md:grid-cols-2 gap-5">
           <div className="flex flex-col gap-3">
             <fieldset className="fieldset">
               <legend className="text-lg mb-1">商品名稱</legend>
@@ -270,7 +270,7 @@ export function ProductModal({
             </div>
           </div>
         </div>
-        <div className="flex gap-2 justify-end px-5 py-2">
+        <div className="flex gap-2 justify-end px-5 py-2 md:py-5">
           <button className="btn btn-soft" onClick={closeModal}>
             取消
           </button>

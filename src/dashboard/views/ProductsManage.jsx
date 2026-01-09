@@ -1,9 +1,22 @@
 import { ProductModal } from "../components/ProductModal";
+import { Toast } from "../../user/components/Toast";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
+
 export function ProductsManage() {
+  const navigate = useNavigate();
   const [showOpen, setShowOpen] = useState(false);
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+    setTimeout(() => {
+      setToast(null);
+    }, 3000);
+  };
+
   const handleOpenModal = (product = null) => {
     if (product && product.id) {
       setSelectedProduct({ ...product });
@@ -33,12 +46,12 @@ export function ProductsManage() {
       const data = await res.json();
       if (data.success === true) {
         setProducts(data.products);
-        console.log(products);
       } else {
-        console.log("取得商品失敗");
+        showToast("取得商品失敗", "error");
       }
     } catch (error) {
       console.log(error);
+      showToast("取得商品失敗，請稍後再試", "error");
     }
   };
 
@@ -56,11 +69,13 @@ export function ProductsManage() {
       if (data.success) {
         setShowOpen(false);
         getProducts();
+        showToast("新增商品成功！", "success");
       } else {
-        console.log("新增商品失敗");
+        showToast(data.message || "新增商品失敗", "error");
       }
     } catch (error) {
       console.log(error);
+      showToast("新增商品失敗，請稍後再試", "error");
     }
   };
 
@@ -78,11 +93,13 @@ export function ProductsManage() {
       if (data.success) {
         setShowOpen(false);
         getProducts();
+        showToast("編輯商品成功！", "success");
       } else {
-        console.log("編輯商品失敗");
+        showToast(data.message || "編輯商品失敗", "error");
       }
     } catch (error) {
       console.log(error);
+      showToast("編輯商品失敗，請稍後再試", "error");
     }
   };
 
@@ -99,18 +116,20 @@ export function ProductsManage() {
       if (data.success) {
         setShowOpen(false);
         getProducts();
+        showToast("刪除商品成功！", "success");
       } else {
-        console.log("刪除商品失敗");
+        showToast(data.message || "刪除商品失敗", "error");
       }
     } catch (error) {
       console.log(error);
+      showToast("刪除商品失敗，請稍後再試", "error");
     }
   };
 
   const handleCheckLogin = async () => {
     if (!decodedToken) {
       navigate("/login");
-      setError("請先登入");
+      showToast("請先登入", "error");
       return;
     }
     try {
@@ -123,9 +142,14 @@ export function ProductsManage() {
       const data = await res.json();
       if (data.success) {
         getProducts();
+      } else {
+        navigate("/login");
+        showToast("身分驗證失敗，請重新登入", "error");
       }
     } catch (error) {
-      setError("身分驗證失敗");
+      console.log(error);
+      showToast("身分驗證失敗，請重新登入", "error");
+      navigate("/login");
     }
   };
 
@@ -239,9 +263,14 @@ export function ProductsManage() {
           selectedProduct={selectedProduct}
         />
       )}
-      
-       
-      
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </>
   );
 }

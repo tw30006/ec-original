@@ -19,7 +19,11 @@ const getCookieToken = () => {
 
 const RequireAuth = ({ children }) => {
   const token = getCookieToken();
-  if (!token) return <Navigate to="/login" replace />;
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
   return children;
 };
 const routes = [
@@ -56,7 +60,11 @@ const routes = [
     children: [
       {
         path: "",
-        element: <ProductsManage />,
+        element: (
+          <RequireAuth>
+            <ProductsManage />
+          </RequireAuth>
+        ),
       },
     ],
   },
